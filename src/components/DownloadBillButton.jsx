@@ -1,0 +1,59 @@
+'use client';
+import { useState } from 'react';
+
+export default function DownloadBillButton({ billId }) {
+  const [loading, setLoading] = useState(false);
+
+  const handleDownload = async () => {
+    setLoading(true);
+    try {
+      // Fetch bill data from API
+      const res = await fetch(`/api/bills/${billId}/download`);
+      const bill = await res.json();
+
+      if (bill.error) {
+        alert(bill.error);
+        setLoading(false);
+        return;
+      }
+
+      // Dynamically import jsPDF
+      const { jsPDF } = await import('jspdf');
+      const doc = new jsPDF();
+
+      // PDF content
+      doc.setFontSize(22);
+      doc.text("Electric Utility Provider", 105, 20, { align: "center" });
+      doc.setFontSize(12);
+      doc.text(`Bill Number: ${bill.billNumber}`, 20, 40);
+      doc.text(`Customer: ${bill.user.firstName} ${bill.user.lastName}`, 20, 48);
+      doc.text(`Email: ${bill.user.email}`, 20, 56);
+      doc.text(`Account Number: ${bill.user.accountNumber}`, 20, 64);
+      doc.text(`Amount Paid: $${bill.amountDue.toFixed(2)}`, 20, 72);
+      doc.text(`Status: ${bill.status.toUpperCase()}`, 20, 80);
+      doc.text(
+        `Payment Date: ${bill.paidAt ? new Date(bill.paidAt).toLocaleDateString() : 'N/A'}`,
+        20,
+        88
+      );
+
+      // Save PDF
+      doc.save(`Bill_${bill.billNumber}.pdf`);
+    } catch (err) {
+      console.error('Error downloading bill:', err);
+      alert('Failed to download bill PDF');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleDownload}
+      disabled={loading}
+      className="btn btn-primary"
+    >
+      {loading ? 'Downloading...' : 'Download Bill'}
+    </button>
+  );
+}

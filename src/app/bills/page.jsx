@@ -7,6 +7,7 @@ import PaymentForm from '@/components/bills/PaymentForm';
 import styles from '@/styles/pages/Bills.module.css';
 import Header from '@/components/ui/Header';
 import Link from "next/link";
+import DownloadBillButton from '@/components/DownloadBillButton';
 
 export default function Bills() {
   const { user, isAuthenticated, loading } = useAuth();
@@ -158,6 +159,7 @@ export default function Bills() {
 
   return (
     <>
+    <DownloadBillButton billId={"sample-bill-id"} />
       <header />
 
       <div className={styles.bills}>
