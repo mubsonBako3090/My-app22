@@ -20,6 +20,8 @@ export default function Register({ onSwitchToLogin, onClose }) {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false); // ✅ For toggling password visibility
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { register } = useAuth();
 
     const states = [
@@ -58,7 +60,6 @@ export default function Register({ onSwitchToLogin, onClose }) {
             return;
         }
 
-        // ✅ FIXED: Correct data format for backend
         const userData = {
             firstName: formData.firstName,
             lastName: formData.lastName,
@@ -77,6 +78,7 @@ export default function Register({ onSwitchToLogin, onClose }) {
 
             if (result.success) {
                 onClose?.();
+                onSwitchToLogin(); // ✅ Redirect to login after successful registration
             } else {
                 setError(result.error || 'Registration failed. Please try again.');
             }
@@ -193,7 +195,21 @@ export default function Register({ onSwitchToLogin, onClose }) {
                             <label htmlFor="password" className="form-label">Password</label>
                             <div className={styles.inputGroup}>
                                 <i className="bi bi-lock"></i>
-                                <input type="password" className="form-control" id="password" name="password" value={formData.password} onChange={handleChange} required minLength="6" />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    className="form-control"
+                                    id="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    minLength="6"
+                                />
+                                <i
+                                    className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'} ${styles.eyeIcon}`}
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    style={{ cursor: 'pointer' }}
+                                ></i>
                             </div>
                         </div>
 
@@ -201,7 +217,20 @@ export default function Register({ onSwitchToLogin, onClose }) {
                             <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
                             <div className={styles.inputGroup}>
                                 <i className="bi bi-lock"></i>
-                                <input type="password" className="form-control" id="confirmPassword" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    className="form-control"
+                                    id="confirmPassword"
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <i
+                                    className={`bi ${showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'} ${styles.eyeIcon}`}
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    style={{ cursor: 'pointer' }}
+                                ></i>
                             </div>
                         </div>
                     </div>
