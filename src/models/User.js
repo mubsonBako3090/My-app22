@@ -80,9 +80,43 @@ const userSchema = new mongoose.Schema({
     emailNotifications: { type: Boolean, default: true },
     smsNotifications: { type: Boolean, default: false },
     paperlessBilling: { type: Boolean, default: false }
-  }
-}, { timestamps: true });
+  },
 
+  // Meter-related fields
+  meterType: {
+    type: String,
+    enum: ['smart', 'analog', 'digital', null],
+    default: null
+  },
+  meterInstallationStatus: {
+    type: String,
+    enum: ['pending', 'assigned', 'installed', 'active', 'inactive'],
+    default: 'pending'
+  },
+  meterRequestDate: Date,
+  meterInstallationDate: Date,
+  meterLocation: {
+    type: String,
+    enum: ['front', 'back', 'side', 'basement', 'unknown'],
+    default: 'unknown'
+  },
+  meterReadings: [{
+    date: Date,
+    reading: Number,
+    type: { type: String, enum: ['initial', 'regular', 'final'] },
+    submittedBy: String,
+    notes: String
+  }],
+  lastMeterReading: {
+    date: Date,
+    value: Number
+  },
+  nextMeterReadingDate: {
+    type: Date,
+    default: () => new Date(Date.now() + 30*24*60*60*1000) // 30 days from now
+  }
+
+}, { timestamps: true });
 
 // Generate account & meter number
 userSchema.pre('save', function (next) {
@@ -100,10 +134,7 @@ userSchema.pre('save', function (next) {
 // Hash password before saving
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-
-  // Always lowercase email
   if (this.email) this.email = this.email.toLowerCase();
-
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });

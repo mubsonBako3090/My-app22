@@ -1,19 +1,12 @@
-"use client";
-import { useState } from "react";
+'use client';
+import { useState, useEffect } from "react";
 import styles from "@/styles/pages/Bills.module.css";
 
-export default function PaymentForm({ bill, onClose }) {
-  // Ensure safe defaults
-  const safeBill = {
-    billNumber: bill?.billNumber ?? "N/A",
-    amountDue: Number(bill?.amountDue ?? 0),
-    id: bill?.id ?? null,
-  };
-
+export default function PaymentForm({ bill, onClose, onSubmit }) {
+  // ---------------------- State ----------------------
+  const [currentBill, setCurrentBill] = useState(null); // start with null until bill is loaded
   const [method, setMethod] = useState("card");
-
-  // Amount user wants to pay
-  const [amountToPay, setAmountToPay] = useState(safeBill.amountDue);
+  const [amountToPay, setAmountToPay] = useState(0);
 
   // Card
   const [cardNumber, setCardNumber] = useState("");
@@ -33,6 +26,20 @@ export default function PaymentForm({ bill, onClose }) {
 
   // Success animation
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // ---------------------- Effects ----------------------
+  useEffect(() => {
+    if (bill && bill.id) {
+      setCurrentBill({
+        billNumber: bill.billNumber ?? "N/A",
+        amountDue: Number(bill.amountDue ?? 0),
+        totalAmount: Number(bill.amountDue ?? 0),
+        id: bill.id,
+      });
+      setAmountToPay(Number(bill.amountDue ?? 0));
+    }
+  }, [bill]);
 
   // ---------------------- Handlers ----------------------
   const handleCardChange = (e) => {
@@ -42,8 +49,7 @@ export default function PaymentForm({ bill, onClose }) {
   };
 
   const handleCvvChange = (e) => {
-    const val = e.target.value.replace(/\D/g, "");
-    setCvv(val);
+    setCvv(e.target.value.replace(/\D/g, ""));
   };
 
   const handleOpayChange = (e) => {
@@ -58,15 +64,27 @@ export default function PaymentForm({ bill, onClose }) {
     setUssdCode(val);
   };
 
-  // ---------------------- Submit Handler ----------------------
   const handlePayment = async (e) => {
     e.preventDefault();
 
+    if (!currentBill || !currentBill.id) {
+      alert("No bill selected for payment.");
+      return;
+    }
+
+    if (amountToPay <= 0) {
+      alert("Enter a valid payment amount.");
+      return;
+    }
+
+    setLoading(true);
     try {
-      const res = await fetch(`/api/bills/${safeBill.id}/pay`, {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`/api/bills/${currentBill.id}/pay`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           amount: amountToPay,
@@ -78,31 +96,67 @@ export default function PaymentForm({ bill, onClose }) {
         }),
       });
 
+      const data = await res.json();
       if (!res.ok) {
-        throw new Error("Payment failed");
+        alert(data.error || "Payment failed");
+        setLoading(false);
+        return;
       }
+
+      // Update current bill dynamically
+      const newAmountDue = currentBill.amountDue - amountToPay;
+      setCurrentBill((prev) => ({
+        ...prev,
+        amountDue: newAmountDue < 0 ? 0 : newAmountDue,
+      }));
+
+      setAmountToPay(newAmountDue > 0 ? newAmountDue : 0);
 
       setSuccess(true);
 
+      if (onSubmit) onSubmit(data.bill);
+
       setTimeout(() => {
         setSuccess(false);
-        onClose();
+        if (newAmountDue <= 0) onClose();
       }, 1800);
     } catch (error) {
       console.error(error);
-      alert("Payment error");
+      alert("Server error. Payment not processed.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // ---------------------- Progress Bar ----------------------
+  const progressPercentage =
+    currentBill && currentBill.totalAmount
+      ? ((currentBill.totalAmount - currentBill.amountDue) / currentBill.totalAmount) * 100
+      : 0;
+
   // ---------------------- UI ----------------------
+  if (!currentBill) return <p>Loading bill...</p>; // wait until bill is available
+
   return (
     <div className={styles.paymentModalOverlay}>
       <div className={styles.paymentModal}>
-        <h3>Pay Bill #{safeBill.billNumber}</h3>
+        <h3>Pay Bill #{currentBill.billNumber}</h3>
 
         <p>
-          <strong>Amount Due:</strong> ₦{safeBill.amountDue.toFixed(2)}
+          <strong>Amount Due:</strong> ₦{currentBill.amountDue.toFixed(2)}
         </p>
+
+        {/* Progress Bar */}
+        <div className={styles.progressBarContainer}>
+          <div
+            className={styles.progressBarFill}
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
+        <small>
+          Paid: ₦{(currentBill.totalAmount - currentBill.amountDue).toFixed(2)} / ₦
+          {currentBill.totalAmount.toFixed(2)}
+        </small>
 
         {/* Amount to Pay Input */}
         <label className="form-label mt-3">Amount to Pay</label>
@@ -112,47 +166,32 @@ export default function PaymentForm({ bill, onClose }) {
           value={amountToPay}
           onChange={(e) => setAmountToPay(Number(e.target.value))}
           min={1}
-          max={safeBill.amountDue}
+          max={currentBill.amountDue}
           required
+          disabled={loading}
         />
         <small className="text-muted">
-          You can pay a partial amount. Maximum: ₦{safeBill.amountDue.toFixed(2)}
+          You can pay a partial amount. Maximum: ₦{currentBill.amountDue.toFixed(2)}
         </small>
 
         {/* Payment Method Grid */}
         <div className={styles.methodGrid}>
-          <div
-            className={`${styles.methodCard} ${method === "card" ? styles.active : ""}`}
-            onClick={() => setMethod("card")}
-          >
-            💳 Card
-          </div>
-
-          <div
-            className={`${styles.methodCard} ${method === "bank" ? styles.active : ""}`}
-            onClick={() => setMethod("bank")}
-          >
-            🏦 Bank Transfer
-          </div>
-
-          <div
-            className={`${styles.methodCard} ${method === "opay" ? styles.active : ""}`}
-            onClick={() => setMethod("opay")}
-          >
-            🟩 Opay
-          </div>
-
-          <div
-            className={`${styles.methodCard} ${method === "ussd" ? styles.active : ""}`}
-            onClick={() => setMethod("ussd")}
-          >
-            #️⃣ USSD
-          </div>
+          {["card","bank","opay","ussd"].map((m) => (
+            <div
+              key={m}
+              className={`${styles.methodCard} ${method === m ? styles.active : ""}`}
+              onClick={() => setMethod(m)}
+            >
+              {m === "card" && "💳 Card"}
+              {m === "bank" && "🏦 Bank Transfer"}
+              {m === "opay" && "🟩 Opay"}
+              {m === "ussd" && "#️⃣ USSD"}
+            </div>
+          ))}
         </div>
 
         {/* Form */}
         <form onSubmit={handlePayment}>
-          {/* ===== CARD ===== */}
           {method === "card" && (
             <>
               <label className="form-label mt-3">Card Number</label>
@@ -163,6 +202,7 @@ export default function PaymentForm({ bill, onClose }) {
                 onChange={handleCardChange}
                 maxLength={19}
                 required
+                disabled={loading}
               />
 
               <label className="form-label mt-3">CVV</label>
@@ -173,6 +213,7 @@ export default function PaymentForm({ bill, onClose }) {
                 onChange={handleCvvChange}
                 maxLength={3}
                 required
+                disabled={loading}
               />
 
               <label className="form-label mt-3">Expiry Date</label>
@@ -182,11 +223,11 @@ export default function PaymentForm({ bill, onClose }) {
                 value={exp}
                 onChange={(e) => setExp(e.target.value)}
                 required
+                disabled={loading}
               />
             </>
           )}
 
-          {/* ===== BANK ===== */}
           {method === "bank" && (
             <>
               <label className="form-label mt-3">Select Bank</label>
@@ -195,6 +236,7 @@ export default function PaymentForm({ bill, onClose }) {
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
                 required
+                disabled={loading}
               >
                 <option value="">Choose Bank</option>
                 <option value="GTBank">GTBank</option>
@@ -210,11 +252,11 @@ export default function PaymentForm({ bill, onClose }) {
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 required
+                disabled={loading}
               />
             </>
           )}
 
-          {/* ===== OPAY ===== */}
           {method === "opay" && (
             <>
               <label className="form-label mt-3">Opay Account Number</label>
@@ -225,14 +267,12 @@ export default function PaymentForm({ bill, onClose }) {
                 onChange={handleOpayChange}
                 placeholder="10-digit number"
                 required
+                disabled={loading}
               />
-              {!opayValid && (
-                <small className="text-danger">Invalid Opay number</small>
-              )}
+              {!opayValid && <small className="text-danger">Invalid Opay number</small>}
             </>
           )}
 
-          {/* ===== USSD ===== */}
           {method === "ussd" && (
             <>
               <label className="form-label mt-3">Enter USSD Code</label>
@@ -243,25 +283,21 @@ export default function PaymentForm({ bill, onClose }) {
                 onChange={handleUssdChange}
                 placeholder="*737*2*Amount#"
                 required
+                disabled={loading}
               />
             </>
           )}
 
           <div className="d-flex justify-content-between mt-4">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onClose}
-            >
+            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
               Cancel
             </button>
-            <button type="submit" className="btn btn-primary">
-              Pay Now
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? "Processing..." : "Pay Now"}
             </button>
           </div>
         </form>
 
-        {/* Success Overlay */}
         {success && (
           <div className={styles.successOverlay}>
             <div className={styles.checkmark}>✔</div>

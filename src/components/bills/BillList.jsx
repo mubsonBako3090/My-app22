@@ -1,21 +1,17 @@
 'use client';
 import { useState } from "react";
 import PaymentForm from "./PaymentForm";
+import DownloadBillButton from "@/components/DownloadBillButton"; // client-side component
 import styles from "@/styles/pages/Bills.module.css";
-import { downloadBill } from "@/services/billService"; // ✅ import the download function
-import Header from "../ui/Header";
+import Header from "@/components/ui/Header";
 
 export default function BillList({ bills }) {
   const [selectedBill, setSelectedBill] = useState(null);
   const [showPayment, setShowPayment] = useState(false);
 
   const handlePayClick = (bill) => {
-    // Only open if bill exists and amountDue is a number
     if (bill && !isNaN(Number(bill.amountDue))) {
-      setSelectedBill({
-        ...bill,
-        amountDue: Number(bill.amountDue), // ensure number
-      });
+      setSelectedBill({ ...bill, amountDue: Number(bill.amountDue) });
       setShowPayment(true);
     } else {
       alert("Invalid bill data. Cannot pay this bill.");
@@ -35,14 +31,12 @@ export default function BillList({ bills }) {
   return (
     <div>
       <Header />
-        <h2>Your Bills</h2>
-        <ul className={styles.billList}>
-          {bills.map((bill) => (
-            <li key={bill.id} className={styles.billItem}>
+      <h2>Your Bills</h2>
+      <ul className={styles.billList}>
+        {bills.map((bill) => (
+          <li key={bill._id} className={styles.billItem}>
             <span>Bill #{bill.billNumber}</span>
-            <span>
-              Amount Due: ${Number(bill.amountDue ?? 0).toFixed(2)}
-            </span>
+            <span>Amount Due: ${Number(bill.amountDue ?? 0).toFixed(2)}</span>
             <div>
               <button
                 className="btn btn-primary"
@@ -51,15 +45,8 @@ export default function BillList({ bills }) {
                 Pay
               </button>
 
-              {/* ✅ Download Bill button for paid bills */}
-              {bill.status === "paid" && (
-                <button
-                  className="btn btn-success ms-2"
-                  onClick={() => downloadBill(bill.id)}
-                >
-                  Download Bill
-                </button>
-              )}
+              {/* Client-side Download PDF button */}
+              {bill.status === "paid" && <DownloadBillButton billId={bill._id} />}
             </div>
           </li>
         ))}

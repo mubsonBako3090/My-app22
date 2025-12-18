@@ -88,20 +88,20 @@ export const AuthProvider = ({ children }) => {
 
   // LOGOUT
   const logout = async () => {
-    try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
+  try {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+  } finally {
+    localStorage.clear();   // 🔥 FULL cleanup
+    setUser(null);          // 🔥 Reset auth state
+    router.replace("/");    // 🔁 Go home
+  }
+};
 
-      setUser(null);
-      router.push("/");
-      return { success: true };
-    } catch (error) {
-      console.error("Logout error:", error);
-      return { success: false };
-    }
-  };
 
   // FETCH USER SESSION from backend (optional, ensures server sync)
   useEffect(() => {

@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState } from "react";
+import { jsPDF } from "jspdf";
 
 export default function DownloadBillButton({ billId }) {
   const [loading, setLoading] = useState(false);
@@ -7,7 +8,7 @@ export default function DownloadBillButton({ billId }) {
   const handleDownload = async () => {
     setLoading(true);
     try {
-      // Fetch bill data from API
+      // Fetch bill JSON from API
       const res = await fetch(`/api/bills/${billId}/download`);
       const bill = await res.json();
 
@@ -17,11 +18,8 @@ export default function DownloadBillButton({ billId }) {
         return;
       }
 
-      // Dynamically import jsPDF
-      const { jsPDF } = await import('jspdf');
+      // Generate PDF using jsPDF
       const doc = new jsPDF();
-
-      // PDF content
       doc.setFontSize(22);
       doc.text("Electric Utility Provider", 105, 20, { align: "center" });
       doc.setFontSize(12);
@@ -40,8 +38,8 @@ export default function DownloadBillButton({ billId }) {
       // Save PDF
       doc.save(`Bill_${bill.billNumber}.pdf`);
     } catch (err) {
-      console.error('Error downloading bill:', err);
-      alert('Failed to download bill PDF');
+      console.error("Download bill error:", err);
+      alert("Failed to download bill PDF");
     } finally {
       setLoading(false);
     }
@@ -51,9 +49,9 @@ export default function DownloadBillButton({ billId }) {
     <button
       onClick={handleDownload}
       disabled={loading}
-      className="btn btn-primary"
+      className="btn btn-success ms-2"
     >
-      {loading ? 'Downloading...' : 'Download Bill'}
+      {loading ? "Downloading..." : "Download Bill"}
     </button>
   );
 }
