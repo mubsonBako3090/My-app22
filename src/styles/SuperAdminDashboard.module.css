@@ -1,0 +1,145 @@
+/* ===============================
+   SUPER ADMIN DASHBOARD STYLES
+   =============================== */
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem 1rem;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0d6efd;
+  margin-bottom: 1.5rem;
+}
+
+/* --- Summary Cards --- */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+  text-align: center;
+}
+
+.statCard h3 {
+  font-size: 1.8rem;
+  margin-bottom: 0.25rem;
+  color: #212529;
+}
+
+.statCard span {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* --- Table --- */
+.tableWrapper {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  background: #f8f9fa;
+  text-align: left;
+  font-weight: 600;
+  padding: 0.75rem;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem;
+}
+
+.table tr:hover {
+  background: #f8f9fa;
+}
+
+/* --- Status Badges --- */
+.badge {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.installed {
+  background: #d1e7dd;
+  color: #0f5132;
+}
+
+.none {
+  background: #e2e3e5;
+  color: #41464b;
+}
+
+/* --- Action Buttons --- */
+.actionBtn {
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.approveBtn {
+  background: #198754;
+  color: #ffffff;
+}
+
+.approveBtn:hover {
+  background: #157347;
+}
+
+.disabledBtn {
+  background: #adb5bd;
+  color: #ffffff;
+  cursor: not-allowed;
+}
+
+/* --- Loading --- */
+.loading {
+  text-align: center;
+  padding: 4rem 0;
+  font-size: 1rem;
+  color: #6c757d;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .pageTitle {
+    font-size: 1.6rem;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.8rem;
+  }
+}

@@ -24,3 +24,12 @@ export async function requireAdmin(request) {
   if (user.role !== 'admin') throw new Error('Admin access required');
   return true;
 }
+
+
+export function requireSuperAdmin(user) {
+  if (user.role !== 'superAdmin') {
+    const err = new Error('Super admin access required');
+    err.status = 403;
+    throw err;
+  }
+}

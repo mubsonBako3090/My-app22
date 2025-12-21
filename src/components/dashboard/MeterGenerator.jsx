@@ -6,6 +6,9 @@ import { FaBolt, FaPlug, FaCheckCircle } from 'react-icons/fa';
 export default function MeterGenerator() {
   const [step, setStep] = useState(1);
   const [selectedMeter, setSelectedMeter] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
   const [formData, setFormData] = useState({
     preferredInstallationDate: '',
     specialInstructions: '',
@@ -46,23 +49,54 @@ export default function MeterGenerator() {
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = () => {
-    alert(`Meter "${selectedMeter}" submitted!`);
-    setStep(1);
-    setSelectedMeter(null);
-    setFormData({
-      preferredInstallationDate: '',
-      specialInstructions: '',
-      propertyAccess: 'yes',
-      meterLocation: 'front',
-    });
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const res = await fetch('/api/customer/meter/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          meterType: selectedMeter,
+          ...formData,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit meter request');
+      }
+
+      // Reset after success
+      setStep(1);
+      setSelectedMeter(null);
+      setFormData({
+        preferredInstallationDate: '',
+        specialInstructions: '',
+        propertyAccess: 'yes',
+        meterLocation: 'front',
+      });
+
+      alert('Meter request submitted successfully!');
+      window.location.reload(); // refresh dashboard data
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className={styles.meterGenerator}>
       <h2>Meter Generation</h2>
 
-      {/* Step 1: Select Meter */}
+      {error && <p className={styles.errorText}>{error}</p>}
+
+      {/* Step 1 */}
       {step === 1 && (
         <div className={styles.meterGeneratorContainer}>
           <div className={styles.meterOptions}>
@@ -90,6 +124,7 @@ export default function MeterGenerator() {
               </div>
             ))}
           </div>
+
           <div className={styles.stepActions}>
             <button
               className={styles.nextButton}
@@ -102,51 +137,47 @@ export default function MeterGenerator() {
         </div>
       )}
 
-      {/* Step 2: Fill Form */}
+      {/* Step 2 */}
       {step === 2 && (
         <div className={styles.meterGeneratorContainer}>
           <form className={styles.form}>
-            <div className="mb-3">
-              <label>Preferred Installation Date</label>
-              <input
-                type="date"
-                name="preferredInstallationDate"
-                value={formData.preferredInstallationDate}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label>Special Instructions</label>
-              <textarea
-                name="specialInstructions"
-                value={formData.specialInstructions}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="mb-3">
-              <label>Property Access</label>
-              <select
-                name="propertyAccess"
-                value={formData.propertyAccess}
-                onChange={handleChange}
-              >
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </div>
-            <div className="mb-3">
-              <label>Meter Location</label>
-              <select
-                name="meterLocation"
-                value={formData.meterLocation}
-                onChange={handleChange}
-              >
-                <option value="front">Front</option>
-                <option value="back">Back</option>
-              </select>
-            </div>
+            <label>Preferred Installation Date</label>
+            <input
+              type="date"
+              name="preferredInstallationDate"
+              value={formData.preferredInstallationDate}
+              onChange={handleChange}
+              required
+            />
+
+            <label>Special Instructions</label>
+            <textarea
+              name="specialInstructions"
+              value={formData.specialInstructions}
+              onChange={handleChange}
+            />
+
+            <label>Property Access</label>
+            <select
+              name="propertyAccess"
+              value={formData.propertyAccess}
+              onChange={handleChange}
+            >
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+
+            <label>Meter Location</label>
+            <select
+              name="meterLocation"
+              value={formData.meterLocation}
+              onChange={handleChange}
+            >
+              <option value="front">Front</option>
+              <option value="back">Back</option>
+            </select>
           </form>
+
           <div className={styles.stepActions}>
             <button className={styles.backButton} onClick={handleBack}>
               Back
@@ -162,35 +193,28 @@ export default function MeterGenerator() {
         </div>
       )}
 
-      {/* Step 3: Confirmation */}
+      {/* Step 3 */}
       {step === 3 && (
         <div className={styles.meterGeneratorContainer}>
           <div className={styles.confirmationCard}>
             <h4>Confirm Your Meter Selection</h4>
-            <p>
-              <strong>Meter Type:</strong> {selectedMeter}
-            </p>
-            <p>
-              <strong>Installation Date:</strong>{' '}
-              {formData.preferredInstallationDate}
-            </p>
-            <p>
-              <strong>Special Instructions:</strong>{' '}
-              {formData.specialInstructions || 'None'}
-            </p>
-            <p>
-              <strong>Property Access:</strong> {formData.propertyAccess}
-            </p>
-            <p>
-              <strong>Meter Location:</strong> {formData.meterLocation}
-            </p>
+            <p><strong>Meter Type:</strong> {selectedMeter}</p>
+            <p><strong>Installation Date:</strong> {formData.preferredInstallationDate}</p>
+            <p><strong>Special Instructions:</strong> {formData.specialInstructions || 'None'}</p>
+            <p><strong>Property Access:</strong> {formData.propertyAccess}</p>
+            <p><strong>Meter Location:</strong> {formData.meterLocation}</p>
           </div>
+
           <div className={styles.stepActions}>
             <button className={styles.backButton} onClick={handleBack}>
               Back
             </button>
-            <button className={styles.submitButton} onClick={handleSubmit}>
-              Submit
+            <button
+              className={styles.submitButton}
+              onClick={handleSubmit}
+              disabled={loading}
+            >
+              {loading ? 'Submitting...' : 'Submit'}
             </button>
           </div>
         </div>

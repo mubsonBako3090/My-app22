@@ -61,10 +61,14 @@ const userSchema = new mongoose.Schema({
     default: 'residential'
   },
   role: {
-    type: String,
-    enum: ['customer', 'admin'],
-    default: 'customer'
-  },
+  type: String,
+  enum: ['customer', 'admin', 'superAdmin'],
+  default: 'customer',
+},
+  isStaff: {
+  type: Boolean,
+  default: false,
+},
   isActive: {
     type: Boolean,
     default: true

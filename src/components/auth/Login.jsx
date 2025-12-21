@@ -17,18 +17,20 @@ export default function Login({ onSwitchToRegister, onClose }) {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    const result = await login(formData.email, formData.password);
+  const result = await login(formData.email, formData.password);
 
-    if (!result.success) {
-      setError(result.error);
-    }
+  if (!result.success) {
+    setError(result.error);
+  }
 
-    setLoading(false);
-  };
+  setLoading(false);
+};
+
+
 
   return (
     <div className={styles.authModal}>

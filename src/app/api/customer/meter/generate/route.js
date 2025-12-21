@@ -7,10 +7,8 @@ export async function POST(request) {
   try {
     await connectDB();
 
-    // Authenticate user via cookie
     const user = await requireAuth(request);
 
-    // Only customers can generate meters
     if (user.role !== 'customer') {
       return NextResponse.json(
         { error: 'Only customers can generate a meter' },
@@ -18,34 +16,59 @@ export async function POST(request) {
       );
     }
 
-    // Generate meter number if not present
-    if (!user.meterNumber) {
-      user.meterNumber = 'MTR' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    // 🔥 Read data from frontend
+    const body = await request.json();
+    const {
+      meterType,
+      preferredInstallationDate,
+      specialInstructions,
+      propertyAccess,
+      meterLocation
+    } = body;
+
+    // Prevent duplicate requests
+    if (user.meterInstallationStatus === 'pending') {
+      return NextResponse.json(
+        { error: 'Meter request already pending' },
+        { status: 400 }
+      );
     }
 
-    // Default meter fields
-    user.meterType = user.meterType || 'smart';
+    // Generate meter number if not present
+    if (!user.meterNumber) {
+      user.meterNumber =
+        'MTR' + Math.random().toString(36).substring(2, 10).toUpperCase();
+    }
+
+    // Save meter info
+    user.meterType = meterType || 'smart';
     user.meterInstallationStatus = 'pending';
     user.meterRequestDate = new Date();
+    user.preferredInstallationDate = preferredInstallationDate;
+    user.specialInstructions = specialInstructions;
+    user.propertyAccess = propertyAccess;
+    user.meterLocation = meterLocation;
 
-    // Optional: set next meter reading date automatically
-    user.nextMeterReadingDate =
-      user.nextMeterReadingDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    // Auto next reading date (after installation)
+    user.nextMeterReadingDate = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000
+    );
 
-    // Save changes
     await user.save();
 
     return NextResponse.json({
-      message: 'Meter generated successfully',
+      message: 'Meter request submitted successfully',
       meterNumber: user.meterNumber,
       meterType: user.meterType,
       installationStatus: user.meterInstallationStatus,
       requestDate: user.meterRequestDate,
-      nextReadingDate: user.nextMeterReadingDate
+      preferredInstallationDate: user.preferredInstallationDate
     });
   } catch (err) {
     console.error('Meter generation error:', err);
-    const status = err.status || 500;
-    return NextResponse.json({ error: err.message }, { status });
+    return NextResponse.json(
+      { error: err.message || 'Server error' },
+      { status: err.status || 500 }
+    );
   }
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from '@/styles/Login.module.css';
 
@@ -16,11 +16,12 @@ export default function Register({ onSwitchToLogin, onClose }) {
         state: '',
         zipCode: '',
         customerType: 'residential',
+        role: 'customer', // ✅ added role
         agreeToTerms: false
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [showPassword, setShowPassword] = useState(false); // ✅ For toggling password visibility
+    const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const { register } = useAuth();
 
@@ -33,6 +34,15 @@ export default function Register({ onSwitchToLogin, onClose }) {
         'Plateau', 'Rivers', 'Sokoto', 'Taraba', 'Yobe', 'Zamfara',
         'FCT Abuja'
     ];
+
+    // Disable customer type if role is superAdmin
+    useEffect(() => {
+        if (formData.role === 'superAdmin') {
+            setFormData(prev => ({ ...prev, customerType: null }));
+        } else if (!formData.customerType) {
+            setFormData(prev => ({ ...prev, customerType: 'residential' }));
+        }
+    }, [formData.role]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -70,7 +80,8 @@ export default function Register({ onSwitchToLogin, onClose }) {
             city: formData.city,
             state: formData.state,
             zipCode: formData.zipCode,
-            customerType: formData.customerType
+            customerType: formData.customerType,
+            role: formData.role // ✅ include role
         };
 
         try {
@@ -78,7 +89,7 @@ export default function Register({ onSwitchToLogin, onClose }) {
 
             if (result.success) {
                 onClose?.();
-                onSwitchToLogin(); // ✅ Redirect to login after successful registration
+                onSwitchToLogin();
             } else {
                 setError(result.error || 'Registration failed. Please try again.');
             }
@@ -145,24 +156,41 @@ export default function Register({ onSwitchToLogin, onClose }) {
                         </div>
                     </div>
 
+                    {/* Customer Type */}
                     <div className="mb-3">
                         <label className="form-label">Customer Type</label>
                         <div className="row">
                             <div className="col-6">
                                 <div className="form-check">
-                                    <input className="form-check-input" type="radio" name="customerType" id="residential" value="residential" checked={formData.customerType === 'residential'} onChange={handleChange} />
+                                    <input className="form-check-input" type="radio" name="customerType" id="residential" value="residential" checked={formData.customerType === 'residential'} onChange={handleChange} disabled={formData.role === 'superAdmin'} />
                                     <label className="form-check-label" htmlFor="residential">Residential</label>
                                 </div>
                             </div>
                             <div className="col-6">
                                 <div className="form-check">
-                                    <input className="form-check-input" type="radio" name="customerType" id="commercial" value="commercial" checked={formData.customerType === 'commercial'} onChange={handleChange} />
+                                    <input className="form-check-input" type="radio" name="customerType" id="commercial" value="commercial" checked={formData.customerType === 'commercial'} onChange={handleChange} disabled={formData.role === 'superAdmin'} />
                                     <label className="form-check-label" htmlFor="commercial">Commercial</label>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    {/* Role Selection */}
+                    <div className="mb-3">
+                        <label className="form-label">Role</label>
+                        <select 
+                            className="form-select" 
+                            name="role" 
+                            value={formData.role} 
+                            onChange={handleChange} 
+                            required
+                        >
+                            <option value="customer">Customer</option>
+                            <option value="superAdmin">Super Admin</option>
+                        </select>
+                    </div>
+
+                    {/* Address, Password, and Terms remain the same */}
                     <div className="mb-3">
                         <label htmlFor="street" className="form-label">Street Address</label>
                         <input type="text" className="form-control" id="street" name="street" value={formData.street} onChange={handleChange} required />

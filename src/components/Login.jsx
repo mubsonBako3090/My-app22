@@ -28,6 +28,13 @@ export default function Login({ onSwitchToRegister, onClose }) {
     }
 
     setLoading(false);
+
+    if (user.role === 'superAdmin') {
+  router.replace('/superadmin/dashboard');
+} else {
+  router.replace('/dashboard');
+}
+
   };
 
   return (

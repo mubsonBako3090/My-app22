@@ -42,27 +42,39 @@ export const AuthProvider = ({ children }) => {
   }, [user]);
 
   // LOGIN
-  const login = async (email, password) => {
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
+ const login = async (email, password) => {
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email, password }),
+    });
 
-      const data = await res.json();
-      if (!res.ok) return { success: false, error: data.error || "Login failed" };
-
-      setUser(data.data.user);
-      closeAuth();
-      router.push("/dashboard");
-      return { success: true };
-    } catch (err) {
-      console.error("Login error:", err);
-      return { success: false, error: "Something went wrong" };
+    const data = await res.json();
+    if (!res.ok) {
+      return { success: false, error: data.error || "Login failed" };
     }
-  };
+
+    const loggedInUser = data.data.user;
+
+    // ✅ Save user FIRST
+    setUser(loggedInUser);
+    closeAuth();
+
+    // ✅ Redirect AFTER user exists
+    if (loggedInUser.role === "superAdmin") {
+      router.replace("/superadmin/dashboard");
+    } else {
+      router.replace("/dashboard");
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("Login error:", err);
+    return { success: false, error: "Something went wrong" };
+  }
+};
 
   // REGISTER
   const register = async (userData) => {

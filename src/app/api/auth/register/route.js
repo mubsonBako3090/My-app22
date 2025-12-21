@@ -18,7 +18,8 @@ export const POST = withDatabase(async (request) => {
       city,
       state,
       zipCode,
-      customerType
+      customerType,
+      role // role from frontend
     } = body;
 
     // Validation
@@ -45,6 +46,17 @@ export const POST = withDatabase(async (request) => {
       );
     }
 
+    // Super admin restriction
+    if (role === 'superAdmin') {
+      const existingSuperAdmin = await User.findOne({ role: 'superAdmin' });
+      if (existingSuperAdmin) {
+        return NextResponse.json(
+          { success: false, error: 'A Super Admin already exists' },
+          { status: 403 }
+        );
+      }
+    }
+
     // Create user
     const user = await User.create({
       firstName: firstName.trim(),
@@ -59,7 +71,9 @@ export const POST = withDatabase(async (request) => {
         zipCode: zipCode.trim(),
         country: 'NG'
       },
-      customerType: customerType || 'residential'
+      // If role is superAdmin, customerType is null
+      customerType: role === 'superAdmin' ? null : (customerType || 'residential'),
+      role: role || 'customer' // default to customer if not provided
     });
 
     const token = generateToken(user._id);
@@ -75,6 +89,7 @@ export const POST = withDatabase(async (request) => {
       accountNumber: user.accountNumber,
       meterNumber: user.meterNumber,
       customerType: user.customerType,
+      role: user.role,
       address: user.address,
       preferences: user.preferences,
       lastLogin: user.lastLogin

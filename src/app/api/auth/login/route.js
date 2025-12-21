@@ -50,18 +50,19 @@ export const POST = async (request) => {
 
       // Prepare user response (exclude password)
       const userResponse = {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-        accountNumber: user.accountNumber,
-        meterNumber: user.meterNumber,
-        customerType: user.customerType,
-        address: user.address,
-        preferences: user.preferences,
-        lastLogin: user.lastLogin
-      };
+  id: user._id,
+  firstName: user.firstName,
+  lastName: user.lastName,
+  email: user.email,
+  phone: user.phone,
+  role: user.role, // ✅ ADD THIS
+  accountNumber: user.accountNumber,
+  meterNumber: user.meterNumber,
+  customerType: user.customerType,
+  address: user.address,
+  preferences: user.preferences,
+  lastLogin: user.lastLogin
+};
 
       // Create response
       const response = NextResponse.json(
