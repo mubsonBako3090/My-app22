@@ -1,40 +1,106 @@
-
-.root {
-    --primary-color: #4361ee;
-    --secondary-color: #3f37c9;
-    --success-color: #4cc9f0;
-    --warning-color: #f72585;
-    --danger-color: #f72585;
-    --light-color: #f8f9fa;
-    --dark-color: #212529;
-    --gray-color: #6c757d;
-    --light-gray: #e9ecef;
-    --border-radius: 10px;
-    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --transition: all 0.3s ease;
+.dashboardContainer {
+  display: flex;
+  min-height: 100vh;
+  padding: 20px;
+  gap: 20px;
 }
 
-/* ===== Base Styles ===== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+/* ===== Sidebar Styles ===== */
+.sidebar {
+  width: 250px;
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 25px 20px;
+  box-shadow: var(--box-shadow);
+  height: fit-content;
+  position: sticky;
+  top: 20px;
 }
 
-body {
-    background-color: #f5f7fb;
-    color: var(--dark-color);
-    line-height: 1.6;
+.logo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-/* ===== Dashboard Layout ===== */
-.dashboard-container {
-    display: flex;
-    min-height: 100vh;
-    padding: 20px;
-    gap: 20px;
+.navMenu {
+  list-style: none;
+  margin-bottom: 40px;
 }
+
+.navLink {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 8px;
+  color: var(--dark-color);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.navLink:hover {
+  background-color: var(--light-gray);
+}
+
+.navLinkActive {
+  background-color: rgba(67, 97, 238, 0.1);
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* ===== Main Content ===== */
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 20px 30px;
+  box-shadow: var(--box-shadow);
+}
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btnPrimary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btnPrimary:hover {
+  background-color: var(--secondary-color);
+}
+
+/* ===== Stats ===== */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.statCard {
+  background-color: white;
+  border-radius: var(--border-radius);
+  padding: 25px;
+  box-shadow: var(--box-shadow);
+    }
 
 /* ===== Sidebar Styles ===== */
 .sidebar {
