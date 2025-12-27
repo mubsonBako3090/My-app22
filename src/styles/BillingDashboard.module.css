@@ -1,0 +1,549 @@
+
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --success-color: #4cc9f0;
+    --warning-color: #f72585;
+    --danger-color: #f72585;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --gray-color: #6c757d;
+    --light-gray: #e9ecef;
+    --border-radius: 10px;
+    --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --transition: all 0.3s ease;
+}
+
+/* ===== Base Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background-color: #f5f7fb;
+    color: var(--dark-color);
+    line-height: 1.6;
+}
+
+/* ===== Dashboard Layout ===== */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* ===== Sidebar Styles ===== */
+.sidebar {
+    width: 250px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 25px 20px;
+    box-shadow: var(--box-shadow);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.logo i {
+    margin-right: 10px;
+    font-size: 2rem;
+}
+
+.nav-menu {
+    list-style: none;
+    margin-bottom: 40px;
+}
+
+.nav-item {
+    margin-bottom: 10px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: var(--dark-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    background-color: var(--light-gray);
+}
+
+.nav-link.active {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.nav-link i {
+    margin-right: 12px;
+    width: 20px;
+    text-align: center;
+}
+
+.account-info {
+    padding-top: 20px;
+    border-top: 1px solid var(--light-gray);
+}
+
+.account-info h4 {
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+.account-info p {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+}
+
+/* ===== Main Content Styles ===== */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 20px 30px;
+    box-shadow: var(--box-shadow);
+}
+
+.header h1 {
+    color: var(--dark-color);
+    font-size: 1.8rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* ===== Button Styles ===== */
+.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+}
+
+.btn-outline {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+    background-color: rgba(67, 97, 238, 0.1);
+}
+
+.notification-btn {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: var(--gray-color);
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--warning-color);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== Stats Cards ===== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 25px;
+    box-shadow: var(--box-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-info h3 {
+    font-size: 2.2rem;
+    color: var(--dark-color);
+    margin-bottom: 5px;
+}
+
+.stat-info p {
+    color: var(--gray-color);
+    font-size: 0.95rem;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+}
+
+.stat-income .stat-icon {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+}
+
+.stat-outstanding .stat-icon {
+    background-color: rgba(247, 37, 133, 0.1);
+    color: var(--warning-color);
+}
+
+.stat-invoices .stat-icon {
+    background-color: rgba(76, 201, 240, 0.1);
+    color: var(--success-color);
+}
+
+.stat-clients .stat-icon {
+    background-color: rgba(111, 66, 193, 0.1);
+    color: #6f42c1;
+}
+
+/* ===== Billing Sections ===== */
+.billing-section {
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 30px;
+    box-shadow: var(--box-shadow);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.section-header h2 {
+    color: var(--dark-color);
+    font-size: 1.5rem;
+}
+
+.section-header a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.section-header a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Table Styles ===== */
+.table-container {
+    overflow-x: auto;
+}
+
+.invoices-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.invoices-table th {
+    text-align: left;
+    padding: 15px;
+    border-bottom: 1px solid var(--light-gray);
+    color: var(--gray-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.invoices-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.invoices-table tr:last-child td {
+    border-bottom: none;
+}
+
+.invoices-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* ===== Status Badges ===== */
+.status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.status-paid {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.status-pending {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.status-overdue {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+/* ===== Invoice Actions ===== */
+.invoice-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: var(--gray-color);
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: var(--transition);
+}
+
+.action-btn:hover {
+    color: var(--primary-color);
+}
+
+/* ===== Chart Styles ===== */
+.two-column-section {
+    display: flex;
+    gap: 20px;
+}
+
+.chart-section {
+    flex: 2;
+}
+
+.activity-section {
+    flex: 1;
+}
+
+.chart-container {
+    height: 300px;
+    margin-top: 20px;
+}
+
+.chart-placeholder {
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+    gap: 20px;
+    padding-top: 30px;
+}
+
+.chart-bar {
+    flex: 1;
+    background: linear-gradient(to top, var(--primary-color), #4cc9f0);
+    border-radius: 5px;
+}
+
+.chart-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    color: var(--gray-color);
+    font-size: 0.9rem;
+}
+
+/* ===== Recent Activity Styles ===== */
+.activity-list {
+    list-style: none;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    flex-shrink: 0;
+}
+
+.activity-payment .activity-icon {
+    background-color: rgba(67, 97, 238, 0.1);
+    color: var(--primary-color);
+}
+
+.activity-invoice .activity-icon {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.activity-client .activity-icon {
+    background-color: rgba(111, 66, 193, 0.1);
+    color: #6f42c1;
+}
+
+.activity-content h4 {
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.activity-content p {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+}
+
+.activity-time {
+    margin-left: auto;
+    color: var(--gray-color);
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 1200px) {
+    .dashboard-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        position: static;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .two-column-section {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .billing-section {
+        padding: 20px;
+    }
+    
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .table-container {
+        font-size: 0.9rem;
+    }
+    
+    .invoices-table th, 
+    .invoices-table td {
+        padding: 10px 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-container {
+        padding: 15px;
+    }
+    
+    .invoice-actions {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .activity-item {
+        flex-wrap: wrap;
+    }
+    
+    .activity-time {
+        margin-left: 55px;
+        margin-top: 5px;
+        width: 100%;
+    }
+    
+    .btn {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}
