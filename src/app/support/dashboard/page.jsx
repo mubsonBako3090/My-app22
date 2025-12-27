@@ -5,10 +5,10 @@ import RoleBasedRoute from '@/components/RoleBasedRoute';
 import Header from '@/components/ui/Header';
 import Footer from '@/components/Footer';
 
-import SupportStats from '@/components/support/SupportStats';
-import TicketFilters from '@/components/support/TicketFilters';
-import TicketTable from '@/components/support/TicketTable';
-import RecentActivity from '@/components/support/RecentActivity';
+import SupportStats from '@/components/SupportStats';
+import TicketFilters from '@/components/TicketFilters';
+import TicketTable from '@/components/TicketTable';
+import RecentActivity from '@/components/RecentActivity';
 
 import styles from '@/styles/SupportDashboard.module.css';
 
