@@ -1,7 +1,7 @@
 // app/api/superadmin/meter/approve-bulk/route.js
 import { NextResponse } from 'next/server';
 import { authenticateSuperAdmin, createAuditLog } from '@/middleware/auth';
-import connectDB from '@/lib/db';
+import connectDB from '@/lib/database';
 import Customer from '@/models/Customer';
 
 export async function PATCH(request) {
