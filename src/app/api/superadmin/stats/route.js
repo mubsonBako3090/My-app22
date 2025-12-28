@@ -1,7 +1,7 @@
 // app/api/superadmin/stats/route.js
 ‎import { NextResponse } from 'next/server';
 ‎import { authenticateSuperAdmin } from '@/middleware/auth';
-‎import connectDB from '@/lib/db';
+‎import connectDB from '@/lib/database';
 ‎
 ‎export async function GET() {
 ‎  try {
