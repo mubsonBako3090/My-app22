@@ -1,7 +1,7 @@
 ‎// app/api/superadmin/system-health/route.js
 ‎import { NextResponse } from 'next/server';
 ‎import { authenticateSuperAdmin } from '@/middleware/auth';
-‎import connectDB from '@/lib/db';
+‎import connectDB from '@/lib/database';
 ‎import os from 'os';
 ‎
 ‎export async function GET() {
